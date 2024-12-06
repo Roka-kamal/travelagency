@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
 
-const initiateDBConnection = async ()=> {
-    try{
-        await mongoose.connect(process.env.MONGO_CONNECTION_URL);
-        console.log('connected to db server');
-
-    }catch(error){
-        console.log(error);
+const initiateDBConnection = async () => {
+    try {
+        // call connect() method in mongoose.
+        // the method expects the connection URI which we stored as an environment variable.
+        await mongoose.connect(process.env.MONGO_CONNECTION_URI);
+        console.log('Connected to Mongo DB Server.');
+    } catch (error) {
+        console.log('Error connecting to databases:', error);
     }
 };
 
-//make the function a default export
-module.exports=initiateDBConnection;
+// Make the function a default export
+module.exports = initiateDBConnection;

@@ -1,22 +1,31 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const initiateDBConnection = require('./config/db');
+
 const userRouter = require('./routes/user');
+const packagesRouter = require('./routes/package');
+const flightRouter = require('./routes/flights')
+const hotelOffersRouter = require('./routes/hotelOffers');
+const travelInsuranceRouter = require('./routes/travelInsurance');
 
 // Load environment variables from .env file
 dotenv.config({ path: './config/.env' });
 
+// Define the port from environment variables with a fallback
+const PORT = process.env.PORT;
 // Create an Express application
 const app = express();
+
 
 // Middleware to parse JSON requests
 app.use(express.json());
 
-// Define the port from environment variables with a fallback
-const PORT = process.env.PORT;
-
 // Set up routes
 app.use('/user', userRouter);
+app.use('/package', packagesRouter);
+app.use('/flights', flightRouter);
+app.use('/hotel-offers', hotelOffersRouter);
+app.use('/travel-insurance', travelInsuranceRouter);
 
 // Start the server and initialize the database connection
 app.listen(PORT, async () => {
