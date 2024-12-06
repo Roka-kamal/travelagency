@@ -1,0 +1,23 @@
+//POST http://localhost:3000/user
+
+POST /user HTTP/1.1
+Host: localhost:3000
+Content-Type: application/json
+
+{
+    "fname": "Roaa",
+    "lname": "Kamal",
+    "email": "roaamahmoudkamal@gmail.com",
+    "phone": "1102037336",
+    "password": "3880",
+    "dob": "2003-12-07"
+}
+
+# {
+#     "fname": "roka",
+#     "lname": "Kamal",
+#     "email": "roaa223359@bue.edu.eg",
+#     "phone": "01",
+#     "password": "12345",
+#     "dob": "2003-12-07"
+# }
