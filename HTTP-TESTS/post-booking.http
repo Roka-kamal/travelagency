@@ -1,0 +1,12 @@
+POST /bookings HTTP/1.1
+Host: localhost:3000
+Content-Type: application/json
+
+{
+    "bookingId": 12345,
+    "customerId": 67890,
+    "bookingDate": "2024-12-07T00:00:00.000Z",
+    "status": "Confirmed",
+    "paymentStatus": "Paid",
+    "packageId": 101
+}

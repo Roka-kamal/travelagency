@@ -2,11 +2,13 @@ const express = require('express');
 const dotenv = require('dotenv');
 const initiateDBConnection = require('./config/db');
 
+
 const userRouter = require('./routes/user');
-const packagesRouter = require('./routes/package');
+const packagesRouter = require('./routes/packages');
 const flightRouter = require('./routes/flights')
 const hotelOffersRouter = require('./routes/hotelOffers');
 const travelInsuranceRouter = require('./routes/travelInsurance');
+const bookingsRouter = require('./routes/bookings');
 
 // Load environment variables from .env file
 dotenv.config({ path: './config/.env' });
@@ -22,10 +24,12 @@ app.use(express.json());
 
 // Set up routes
 app.use('/user', userRouter);
-app.use('/package', packagesRouter);
+app.use('/packages', packagesRouter);
 app.use('/flights', flightRouter);
 app.use('/hotel-offers', hotelOffersRouter);
 app.use('/travel-insurance', travelInsuranceRouter);
+app.use('/bookings', bookingsRouter);
+
 
 // Start the server and initialize the database connection
 app.listen(PORT, async () => {
