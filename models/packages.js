@@ -8,7 +8,7 @@ const packageSchema = new Schema({
     },
     packageType: { 
         type: String, 
-        enum: ["Business", "Group ", "individual"], 
+        enum: ["Business", "Group", "Individual"],  
         required: true 
     },
     destination: { 
@@ -27,13 +27,17 @@ const packageSchema = new Schema({
         type: Number, 
         required: true 
     },
-    flight:{
-        type: Schema.Types.ObjectId, 
-        ref: 'Flight',  // Reference to the Flight model
+    flightId: {
+        type: Number, 
+        required: true  
     },
-    hotels:{
-        type: Schema.Types.ObjectId, 
-        ref: 'Hotel',  // Reference to the Hotel model
+    hotelId: {
+        type: Number, 
+        required: true  
+    },
+    imageUrl: {  
+        type: String, 
+        required: false, // Make it optional
     }
 }, {
     timestamps: true, 

@@ -1,4 +1,4 @@
-const packageService = require('../services/package'); // Import the package service
+const packageService = require('../services/packages'); // Import the package service
 
 // Create a new travel package
 module.exports.createPackage = async (req, res) => {
@@ -8,8 +8,7 @@ module.exports.createPackage = async (req, res) => {
         res.status(201).send({ package: newPackage }); // Send the created package as the response with a 201 status
     } catch (err) {
         // Handle errors by sending a 500 server error with the error message
-        res.status(500);
-        res.send({
+        res.status(500).send({
             error: err.message
         });
     }
@@ -24,8 +23,7 @@ module.exports.updatePackage = async (req, res) => {
         res.send({ package: updatedPackage }); // Send the updated package as the response
     } catch (err) {
         // Handle errors by sending a 500 server error with the error message
-        res.status(500);
-        res.send({
+        res.status(500).send({
             error: err.message
         });
     }
@@ -39,8 +37,35 @@ module.exports.deletePackage = async (req, res) => {
         res.send({ message: 'Package deleted successfully', package: deletedPackage }); // Send success message with the deleted package
     } catch (err) {
         // Handle errors by sending a 500 server error with the error message
-        res.status(500);
-        res.send({
+        res.status(500).send({
+            error: err.message
+        });
+    }
+};
+
+
+// View all packages with flight and hotel details
+module.exports.viewAllPackages = async (req, res) => {
+    try {
+        const packages = await packageService.viewAllPackages(); // Call the service to get all packages
+        res.send({ packages }); // Send the packages with detailed flight and hotel info
+    } catch (err) {
+        // Handle errors by sending a 500 server error with the error message
+        res.status(500).send({
+            error: err.message
+        });
+    }
+};
+
+// View a specific package by ID with flight and hotel details
+module.exports.viewPackageById = async (req, res) => {
+    try {
+        const packageId = req.params.id; // Get the package ID from the request parameters
+        const packageDetails = await packageService.viewPackageById(packageId); // Call the service to get package by ID
+        res.send({ package: packageDetails }); // Send the package details with flight and hotel info
+    } catch (err) {
+        // Handle errors by sending a 500 server error with the error message
+        res.status(500).send({
             error: err.message
         });
     }
