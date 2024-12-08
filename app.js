@@ -9,6 +9,7 @@ const flightRouter = require('./routes/flights')
 const hotelOffersRouter = require('./routes/hotelOffers');
 const travelInsuranceRouter = require('./routes/travelInsurance');
 const bookingsRouter = require('./routes/bookings');
+const paymentRouter = require('./routes/payment');
 
 // Load environment variables from .env file
 dotenv.config({ path: './config/.env' });
@@ -29,7 +30,7 @@ app.use('/flights', flightRouter);
 app.use('/hotel-offers', hotelOffersRouter);
 app.use('/travel-insurance', travelInsuranceRouter);
 app.use('/bookings', bookingsRouter);
-
+app.use('/payments', paymentRouter);
 
 // Start the server and initialize the database connection
 app.listen(PORT, async () => {
