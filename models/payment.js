@@ -28,7 +28,7 @@ const PaymentSchema = new Schema({
   
   userId: { 
     type: Schema.Types.ObjectId, 
-    ref: 'User', // Ensure correct user reference 
+    ref: 'user', // Ensure correct user reference 
     required: true 
   }
 });
