@@ -1,3 +1,4 @@
+//models folder
 const {Schema, model} = require('mongoose');
 
 // Booking schema
@@ -6,8 +7,8 @@ const bookingSchema = new Schema({
         type: Number,
         required: true,
     },
-    customerId: {
-        type: Number,
+    customerEmail: {  //customerEmail
+        type: String,
         required: true,
     },
     bookingDate: {

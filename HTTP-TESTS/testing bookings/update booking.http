@@ -1,15 +1,20 @@
-POST /bookings HTTP/1.1
-Host: localhost:3000
-Content-Type: application/json
+# PUT http://localhost:3000/bookings/123
+
+# Content-Type: application/json
+
 
 # {
 #     "bookingId": 123,
 #     "customerEmail": "roaa223359@bue.edu.eg",
-#     "bookingDate": "2024-12-07T00:00:00.000Z",
+#     "bookingDate": "2025-12-07T00:00:00.000Z",
 #     "status": "Confirmed",
 #     "paymentStatus": "Paid",
 #     "packageId": 101
 # }
+
+ PUT http://localhost:3000/bookings/124
+
+Content-Type: application/json
 
 {
     "bookingId": 124,
@@ -17,5 +22,5 @@ Content-Type: application/json
     "bookingDate": "2024-12-07T00:00:00.000Z",
     "status": "Confirmed",
     "paymentStatus": "Paid",
-    "packageId": 101
+    "packageId": 102
 }

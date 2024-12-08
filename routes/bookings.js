@@ -1,3 +1,4 @@
+//router folder
 // Import the express Router
 const { Router } = require('express');
 
@@ -20,8 +21,12 @@ bookingRouter.post('/', bookingsController.createBooking);
 // update an existing booking
 bookingRouter.put('/:bookingId', bookingsController.updateBooking);
 
+
 // delete a booking
 bookingRouter.delete('/:bookingId', bookingsController.deleteBooking);
+
+// Get user details from a booking by bookingId
+bookingRouter.get('/:bookingId/user', bookingsController.getUserFromBooking);
 
 // Exporting the router object
 module.exports = bookingRouter;

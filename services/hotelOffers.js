@@ -18,6 +18,18 @@ module.exports.addHotelOffer = async(data) => {
     }
 };
 
+module.exports.updateHotelOffer = async (hotelId, updatedData) => {
+    try {
+        const updatedOffer = await HotelOffers.findOneAndUpdate({ hotelId }, updatedData, { new: true, overwrite: true });
+        if (!updatedOffer) {
+            throw new Error('Hotel offer not found');
+        }
+        return updatedOffer;
+    } catch (error) {
+        throw new Error('Error updating hotel offer');
+    }
+};
+
 module.exports.removeHotelOffer = async(hotelId) => {
     try{
         const removedOffer = await HotelOffers.findOneAndDelete({ hotelId });
