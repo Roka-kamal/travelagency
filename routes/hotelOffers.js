@@ -8,6 +8,7 @@ const hotelOffersRouter = Router();
 hotelOffersRouter.get('/', hotelOffersControllers.getOffers);
 hotelOffersRouter.post('/', hotelOffersControllers.createOffer);
 hotelOffersRouter.delete('/:hotelId', hotelOffersControllers.removeOffer);
+hotelOffersRouter.put('/:hotelId', hotelOffersControllers.updateHotelOffer);
 
 
 module.exports = hotelOffersRouter;

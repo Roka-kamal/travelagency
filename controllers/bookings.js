@@ -83,3 +83,14 @@ module.exports.viewBookingById = async (req, res) => {
         });
     }
 };
+
+// Get user details from booking
+module.exports.getUserFromBooking = async (req, res) => {
+    try {
+        const bookingId = req.params.bookingId;  // Get booking ID from request parameters
+        const user = await bookingService.getUserFromBooking(bookingId);  // Get user details from the service
+        res.send({ user });  // Send user data as response
+    } catch (err) {
+        res.status(500).send({ error: err.message });  // Handle error
+    }
+};

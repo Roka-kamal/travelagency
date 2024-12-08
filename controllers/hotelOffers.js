@@ -23,6 +23,29 @@ module.exports.createOffer = async (req, res) => {
     }
 };
 
+
+module.exports.updateHotelOffer = async (req, res) => {
+    try {
+        const hotelId = req.params.hotelId;
+        const updatedData = req.body; // Extract the new availableRooms value from request body
+
+          
+          if (updatedData.hotelId && updatedData.hotelId !== parseInt(hotelId)) {
+            return res.status(400).json({ message: 'hotelId cannot be modified' });
+        }
+
+        const updatedOffer = await hotelOffersService.updateHotelOffer(hotelId, updatedData);
+        if (!updatedOffer) {
+            return res.status(404).json({ message: 'Offer not found' });
+        }
+
+        return res.status(200).json({ message: 'Offer successfully updated', offer: updatedOffer });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 module.exports.removeOffer = async (req, res) => {
     try{
         const hotelId = req.params.hotelId;
