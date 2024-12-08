@@ -17,9 +17,10 @@ console.log('Stripe Initialized:', stripe ? 'Success' : 'Failed');*/
 
 
 // Service to create a new payment using Stripe
+// Service to create a new payment using Stripe
 module.exports.createPayment = async (data) => {
   try {
-    const { customerEmail, amount, currency } = data;
+    const { customerEmail, amount, currency, bookingId } = data;
 
     // Step 1: Check if the user exists by email
     const user = await userModel.findOne({ email: customerEmail });
@@ -37,11 +38,12 @@ module.exports.createPayment = async (data) => {
 
     // Step 3: Save the payment record in the database
     const payment = new PaymentModel({
-      customerEmail, // Use customerEmail in the payment record
+      customerEmail, // Store the customerEmail in the payment record
+      bookingId, // Include the bookingId for reference
       userId: user._id,  // Store user ID in the payment record
       amount,
       currency,
-      status: 'pending',
+      status: 'pending', // Default to 'pending' until payment is confirmed
       stripePaymentIntentId: paymentIntent.id, // Save Stripe's payment intent ID
     });
 
@@ -57,6 +59,7 @@ module.exports.createPayment = async (data) => {
     throw new Error(`Could not create payment: ${err.message}`);
   }
 };
+
 
 // Service to confirm payment with Stripe
 module.exports.confirmPayment = async (paymentIntentId) => {
