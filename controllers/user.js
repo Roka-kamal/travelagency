@@ -11,28 +11,61 @@ module.exports.dispayAllUsers = async (req, res) => {
         res.send({error:err});
     }
 }
-
-module.exports.postUser= async(req, res)=>{
-    console.log("Received data:", req.body);
-    const userInfo={
-
-        fname: req.body.fname,
-        lname: req.body.lname,
-        email: req.body.email,
-        phone: req.body.phone,
-        password: req.body.password,
-        dob: req.body.dob
-
-    };
+// Get User Profile
+module.exports.getUser = async (req, res) => {
     try {
+        const userEmail = req.params.email; // Get user email from the request parameters
+        const user = await userService.getUser(userEmail); // Call the service to retrieve the user profile
+        res.send({ user }); // Return the user data
+    } catch (err) {
+        // Handle errors by sending a 404 Not Found status and the error message
+        res.status(404).send({
+            error: err.message
+        });
+    }
+};
+module.exports.postUser= async(req, res)=>{
+    //console.log("Received data:", req.body);
+    try {
+      const userInfo = req.body; // Get user data from the request body  
       const createdUser = await userService.addUser(userInfo);
       return res.status(201).send({
           msg: 'User created successfully.',
           userId: createdUser._id
       });
   } catch (err) {
-      return res.status(500).send({
+      return res.status(400).send({
           error: err.message
       });
   }
 };
+
+// Put User Profile (Update)
+module.exports.putUser = async (req, res) => {
+    try {
+        const userEmail = req.params.email; // Get user email from the request parameters
+        const updateData = req.body; // Get the update data from the request body
+        const updatedUser = await userService.updateUser(userEmail, updateData); // Call the service to update the user profile
+        res.send({ user: updatedUser }); // Return the updated user data
+    } catch (err) {
+        // Handle errors by sending a 400 Bad Request status and the error message
+        res.status(400).send({
+            error: err.message
+        });
+    }
+};
+
+// Delete User Account
+module.exports.deleteUser = async (req, res) => {
+    try {
+        const userEmail = req.params.email; // Get user email from the request parameters
+        const deletedUser = await userService.deleteUser(userEmail); // Call the service to delete the user account
+        res.send({ message: 'User account deleted successfully', user: deletedUser }); // Return success message and deleted user data
+    } catch (err) {
+        // Handle errors by sending a 400 Bad Request status and the error message
+        res.status(400).send({
+            error: err.message
+        });
+    }
+};
+

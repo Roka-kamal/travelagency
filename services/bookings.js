@@ -28,7 +28,7 @@ module.exports.updateBooking = async (bookingId, updateData) => {
 // Delete a booking
 module.exports.deleteBooking = async (bookingId) => {
     try {
-        const deletedBooking = await BookingModel.findOneAndDelete({ bookingId }); // Delete by bookingId
+        const deletedBooking = await BookingModel.findOneAndDelete({ bookingId:bookingId }); // Delete by bookingId
         if (!deletedBooking) {
             throw new Error('Booking not found');
         }

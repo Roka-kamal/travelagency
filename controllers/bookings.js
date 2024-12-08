@@ -32,7 +32,7 @@ module.exports.updateBooking = async (req, res) => {
 // Delete a booking
 module.exports.deleteBooking = async (req, res) => {
     try {
-        const bookingId = req.params.id; // Get the booking ID from the request parameters
+        const bookingId = req.params.bookingId; // Get the booking ID from the request parameters
         const deletedBooking = await bookingService.deleteBooking(bookingId); // Call the service to delete the booking
         res.send({ message: 'Booking deleted successfully', booking: deletedBooking }); // Send success message with the deleted booking
     } catch (err) {
