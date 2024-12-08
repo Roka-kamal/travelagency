@@ -12,7 +12,7 @@ module.exports.sendEmail = async (recipientEmail, subject, content) => {
         content: {
             subject: subject,
             plainText: content,
-            html: `<html><body><h1>${content}</h1></body></html>`,
+            html: `<html><body><h3>RKSS</h3><br><br>${content}</body></html>`,
         },
         recipients: {
             to: [{ address: recipientEmail }],

@@ -2,7 +2,12 @@
 const {Router} = require('express');
 const userController = require('../controllers/user');
 const userRouter = Router();
-module.exports=userRouter;
 
 userRouter.get('/', userController.dispayAllUsers);
-userRouter.post('/', userController.postUser);
+userRouter.get('/:email', userController.getUser); // Get user by email
+userRouter.post('/', userController.postUser); // Create user
+userRouter.put('/:email', userController.putUser); // Update user by email
+userRouter.delete('/:email', userController.deleteUser); // Delete user by email
+
+
+module.exports=userRouter;
