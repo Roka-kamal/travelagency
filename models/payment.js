@@ -2,26 +2,36 @@ const { Schema, model } = require('mongoose');
 
 // Define the Payment Schema
 const PaymentSchema = new Schema({
-  userId: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'user', // Matches the model name in user.js (lowercase)
-    required: true 
+  customerEmail: { 
+    type: String, 
+    required: true, 
   },
-  bookingId: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Booking', // /////////////Placeholder for Booking reference
-    required: false 
+  bookingId: {
+    type: Number,
+    required: true,
   },
-  amount: { type: Number, required: true }, // Payment amount
-  currency: { type: String, required: true }, // Payment currency
+  amount: {
+    type: Number,
+    required: true, // Payment amount
+  },
+  currency: { 
+    type: String, 
+    required: true, // Payment currency
+  },
   status: { 
     type: String, 
     enum: ['pending', 'completed', 'failed'], 
-    default: 'pending' 
+    default: 'pending',
   }, // Payment status
+
   createdAt: { type: Date, default: Date.now }, // Timestamp for payment creation
+  
+  userId: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'User', // Ensure correct user reference 
+    required: true 
+  }
 });
 
-// Export the Payment Model
 module.exports = model('Payment', PaymentSchema);
 

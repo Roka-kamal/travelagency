@@ -1,12 +1,21 @@
 const paymentService = require('../services/payment'); // Import Payment service
+const userService = require('../services/users'); // Import User service
 
 // Controller to create a new payment
 module.exports.createPayment = async (req, res) => {
   try {
+    const { email, amount, currency } = req.body;
+
+    // Verify if the user exists by email
+    const user = await userService.getUser(email); // Get user by email
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+
     const paymentData = {
-      userId: req.body.userId,
-      amount: req.body.amount,
-      currency: req.body.currency,
+      customerEmail: email,  // Use email in the payment data
+      amount,
+      currency,
     };
 
     const result = await paymentService.createPayment(paymentData);
@@ -16,10 +25,9 @@ module.exports.createPayment = async (req, res) => {
       payment: result.payment,
     });
   } catch (err) {
-    res.status(500).send({ error: err.message }); // Server error
+    res.status(500).send({ error: err.message });
   }
 };
-
 // Controller to confirm a payment
 module.exports.confirmPayment = async (req, res) => {
   try {
@@ -56,16 +64,25 @@ module.exports.getPaymentsByUser = async (req, res) => {
   }
 };
 
+
 // Controller to update payment status
 module.exports.updatePaymentStatus = async (req, res) => {
   try {
-    const { paymentId, status } = req.body;
-    const updatedPayment = await paymentService.updatePaymentStatus(paymentId, status);
+    const { email, status } = req.body;
+
+    // Verify if user exists by email
+    const user = await userService.getUser(email);
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+
+    // Proceed with updating payment status
+    const updatedPayment = await paymentService.updatePaymentStatus(user._id, status);
     res.status(200).send({
       message: 'Payment status updated successfully',
       payment: updatedPayment,
     });
   } catch (err) {
-    res.status(500).send({ error: err.message }); // Server error
+    res.status(500).send({ error: err.message });
   }
 };
