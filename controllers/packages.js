@@ -7,12 +7,12 @@ module.exports.createPackage = async (req, res) => {
         const newPackage = await packageService.createPackage(packageData); // Call the service to create a new package
         res.status(201).send({ package: newPackage }); // Send the created package as the response with a 201 status
     } catch (err) {
-        // Handle errors by sending a 500 server error with the error message
-        res.status(500).send({
-            error: err.message
+        res.status(400).send({
+            error: err.message // Changed status to 400 for validation errors
         });
     }
 };
+
 
 // Update an existing travel package
 module.exports.updatePackage = async (req, res) => {
