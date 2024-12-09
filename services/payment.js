@@ -2,127 +2,108 @@ require('dotenv').config({ path: './.env' });
 
 const PaymentModel = require('../models/Payment'); // Import the Payment model
 const userModel = require('../models/user'); // Import the User model
+const emailService = require('../services/emailService');
 
 
-const Stripe = require('stripe'); // Import Stripe
 
-const STRIPE_SECRET_KEY="sk_test_51QT8VALECqYESx26qvv5QzC6vlJZyY0HPBFr1fN0aIb2J6hJnk8ymIRc8pKbAPbwjvxtuVpkhYl6pEJ2JP0x8wYx00ICi1fcy2"
-const stripe = Stripe(STRIPE_SECRET_KEY); // Create a Stripe instance with the secret key
-
-
-/*const stripe = Stripe(process.env.STRIPE_SECRET_KEY);*/ // Initialize Stripe with the secret key
-
-/*const stripe = Stripe('sk_test_your_secret_key_here');
-console.log('Stripe Initialized:', stripe ? 'Success' : 'Failed');*/
-
-
-// Service to create a new payment using Stripe
-// Service to create a new payment using Stripe
-module.exports.createPayment = async (data) => {
+module.exports.createPayment = async (paymentData) => {
   try {
-    const { customerEmail, amount, currency, bookingId } = data;
+      const { customerEmail, amount, paymentMethod } = paymentData;
 
-    // Step 1: Check if the user exists by email
-    const user = await userModel.findOne({ email: customerEmail });
-    if (!user) {
-      throw new Error('User not found with the provided email');
-    }
+      // Step 1: Validate the user by email
+      const user = await userModel.findOne({ email: customerEmail });
+      if (!user) {
+          throw new Error('User not found with the provided email');
+      }
 
-    // Step 2: Create a payment intent with Stripe
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Amount in the smallest currency unit (e.g., cents for USD)
-      currency: currency,
-      description: `Payment by ${user.fname} ${user.lname}`,
-      metadata: { userId: user._id.toString() },
-    });
+      // Step 2: Create a new payment record
+      const newPayment = new PaymentModel(paymentData);
+      await newPayment.save();
 
-    // Step 3: Save the payment record in the database
-    const payment = new PaymentModel({
-      customerEmail, // Store the customerEmail in the payment record
-      bookingId, // Include the bookingId for reference
-      userId: user._id,  // Store user ID in the payment record
-      amount,
-      currency,
-      status: 'pending', // Default to 'pending' until payment is confirmed
-      stripePaymentIntentId: paymentIntent.id, // Save Stripe's payment intent ID
-    });
-
-    const savedPayment = await payment.save();
-
-    // Step 4: Return the client secret to the frontend
-    return {
-      message: 'Payment intent created successfully',
-      clientSecret: paymentIntent.client_secret, // Used by the frontend to complete the payment
-      payment: savedPayment,
-    };
-  } catch (err) {
-    throw new Error(`Could not create payment: ${err.message}`);
-  }
-};
-
-
-// Service to confirm payment with Stripe
-module.exports.confirmPayment = async (paymentIntentId) => {
-  try {
-    // Retrieve the payment intent from Stripe
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
-    if (paymentIntent.status === 'succeeded') {
-      // Update payment status in the database
-      const payment = await PaymentModel.findOneAndUpdate(
-        { stripePaymentIntentId: paymentIntentId },
-        { status: 'completed' },
-        { new: true } // Return the updated payment
+      // Step 3: Send email confirmation
+      const emailContent = `
+          Your payment has been successfully processed.<br>
+          Details:<br>
+          - Amount: ${amount} <br>
+          - Method: ${paymentMethod} <br>
+          - Status: ${newPayment.status} <br>
+          - Payment Date: ${newPayment.paymentDate} <br><br>
+          Thank you for choosing our platform.
+      `;
+      await emailService.sendEmail(
+          customerEmail,
+          "Payment Confirmation",
+          emailContent
       );
-      return payment;
-    } else {
-      throw new Error('Payment not yet completed');
-    }
+
+      return newPayment;
   } catch (err) {
-    throw new Error(`Could not confirm payment: ${err.message}`);
+      throw new Error(`Could not create payment: ${err.message}`);
   }
 };
+
+
+module.exports.updatePaymentStatus = async (paymentId, status) => {
+  try {
+      // Update payment status
+      const updatedPayment = await PaymentModel.findOneAndUpdate(
+          { paymentId: paymentId },
+          { status },
+          { new: true }
+      );
+
+      if (!updatedPayment) {
+          throw new Error('Payment not found');
+      }
+
+      // Send email notification
+      const emailContent = `
+          Your payment status has been updated.<br>
+          New Status: ${status} <br><br>
+          Thank you for choosing our platform.
+      `;
+      await emailService.sendEmail(
+          updatedPayment.customerEmail,
+          "Payment Status Updated",
+          emailContent
+      );
+
+      return updatedPayment;
+  } catch (err) {
+      throw new Error(`Could not update payment status: ${err.message}`);
+  }
+};
+
+
 
 // Service to find all payments
 module.exports.findAllPayments = async () => {
   try {
-    const payments = await PaymentModel.find().populate('userId', 'fname lname email'); // Retrieve all payments and populate user details
-    return payments;
+    // Retrieve all payments
+    const payments = await PaymentModel.find();
+
+    // Attach user details to each payment
+    const paymentsWithUserDetails = await Promise.all(
+      payments.map(async (payment) => {
+        const user = await userModel.findOne({ email: payment.customerEmail }); // Find user by email
+        return {
+          ...payment.toObject(), // Convert payment document to plain object
+          customerDetails: user
+            ? {
+                fname: user.fname,
+                lname: user.lname,
+                email: user.email,
+              }
+            : null, // If no user is found, return null for customerDetails
+        };
+      })
+    );
+
+    return paymentsWithUserDetails;
   } catch (err) {
     throw new Error(`Could not retrieve payments: ${err.message}`);
   }
 };
 
-// Service to find payments by user
-module.exports.findPaymentsByUser = async (userId) => {
-  try {
-    const payments = await PaymentModel.find({ userId }).populate('userId', 'fname lname email phone'); // Retrieve payments for a specific user and populate user details
-    return payments;
-  } catch (err) {
-    throw new Error(`Could not retrieve payments for user: ${err.message}`);
-  }
-};
 
-// Service to update payment status (Modify based on email)
-module.exports.updatePaymentStatus = async (email, status) => {
-  try {
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      throw new Error('User not found');
-    }
 
-    const updatedPayment = await PaymentModel.findOneAndUpdate(
-      { userId: user._id },  // Use user ID for matching
-      { status },
-      { new: true }
-    );
-
-    if (!updatedPayment) {
-      throw new Error('Payment not found');
-    }
-
-    return updatedPayment;
-  } catch (err) {
-    throw new Error(`Could not update payment status: ${err.message}`);
-  }
-};

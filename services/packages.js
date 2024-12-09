@@ -2,21 +2,44 @@ const PackageModel = require('../models/packages');
 const FlightModel = require('../models/flights');  // Import the Flight model
 const HotelModel = require('../models/HotelOffers');    // Import the Hotel model
 
-// Create a new travel package
 module.exports.createPackage = async (packageData) => {
     try {
-        const newPackage = new PackageModel(packageData); // Create new package
-        await newPackage.save(); // Save the package to the database
+        const { flightId, hotelId } = packageData;
+
+        // Step 1: Validate the flightId exists
+        const flight = await FlightModel.findOne({ flightId });
+        if (!flight) {
+            throw new Error('Flight not found with the provided flightId');
+        }
+
+        // Step 2: Validate the hotelId exists
+        const hotel = await HotelModel.findOne({ hotelId });
+        if (!hotel) {
+            throw new Error('Hotel not found with the provided hotelId');
+        }
+
+        // Step 3: Create and save the package
+        const newPackage = new PackageModel(packageData);
+        await newPackage.save();
+
         return newPackage;
+
     } catch (err) {
         throw new Error(`Could not create package: ${err.message}`);
     }
 };
 
-// Update a travel package
+
+
 module.exports.updatePackage = async (packageId, updateData) => {
     try {
-        const updatedPackage = await PackageModel.findByIdAndUpdate(packageId, updateData, { new: true }); // Update the package using the "findByIdAndUpdate()" builtin function
+        // Use findOneAndUpdate to find the package by packageId (custom field)
+        const updatedPackage = await PackageModel.findOneAndUpdate(
+            { packageId },    // Match by packageId
+            updateData,       // Apply the updates
+            { new: true }     // Return the updated document
+        );
+
         if (!updatedPackage) {
             throw new Error('Package not found');
         }
@@ -25,6 +48,21 @@ module.exports.updatePackage = async (packageId, updateData) => {
         throw new Error(`Could not update package: ${err.message}`);
     }
 };
+
+
+
+// // Update a travel package
+// module.exports.updatePackage = async (packageId, updateData) => {
+//     try {
+//         const updatedPackage = await PackageModel.findByIdAndUpdate(packageId, updateData, { new: true }); // Update the package using the "findByIdAndUpdate()" builtin function
+//         if (!updatedPackage) {
+//             throw new Error('Package not found');
+//         }
+//         return updatedPackage;
+//     } catch (err) {
+//         throw new Error(`Could not update package: ${err.message}`);
+//     }
+// };
 
 // Delete a travel package
 module.exports.deletePackage = async (packageId) => {

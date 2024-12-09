@@ -2,6 +2,10 @@ const { Schema, model } = require('mongoose');
 
 // Define the Payment Schema
 const PaymentSchema = new Schema({
+  paymentId:{
+    type: Number,
+    required: true,
+},
   customerEmail: { 
     type: String, 
     required: true, 
@@ -26,11 +30,6 @@ const PaymentSchema = new Schema({
 
   createdAt: { type: Date, default: Date.now }, // Timestamp for payment creation
   
-  userId: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'user', // Ensure correct user reference 
-    required: true 
-  }
 });
 
 module.exports = model('Payment', PaymentSchema);

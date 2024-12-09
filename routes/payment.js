@@ -1,22 +1,36 @@
-// Import Express Router
-const { Router } = require('express');
-const paymentController = require('../controllers/payment'); // Import the Payment Controller
+const { Schema, model } = require('mongoose');
 
-// Create an instance of Express Router
-const paymentRouter = Router();
+// Define the Payment Schema
+const PaymentSchema = new Schema({
+  paymentId:{
+    type: Number,
+    required: true,
+},
+  customerEmail: { 
+    type: String, 
+    required: true, 
+  },
+  bookingId: {
+    type: Number,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true, // Payment amount
+  },
+  currency: { 
+    type: String, 
+    required: true, // Payment currency
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'completed', 'failed'], 
+    default: 'pending',
+  }, // Payment status
 
-// Define Routes for Payments
-// Route to create a new payment
-paymentRouter.post('/', paymentController.createPayment);
+  createdAt: { type: Date, default: Date.now }, // Timestamp for payment creation
+  
+});
 
-// Route to get all payments
-paymentRouter.get('/', paymentController.getAllPayments);
+module.exports = model('Payment', PaymentSchema);
 
-// Route to get payments by user
-paymentRouter.get('/user/:userId', paymentController.getPaymentsByUser);
-
-// Route to update payment status
-paymentRouter.patch('/status', paymentController.updatePaymentStatus);
-
-// Export the payment router
-module.exports = paymentRouter;
